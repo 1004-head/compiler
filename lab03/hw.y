@@ -47,8 +47,8 @@ numberList	: IDENT EQ NUMBER		{ enterTconst($1, $3); }
 varDecl	: VAR identList ';'
 		;
 		
-identList	: IDENT 			{ }
-		| identList COMMA IDENT	{ }
+identList	: IDENT 			{ enterTvar($1); }
+		| identList COMMA IDENT	{ enterTvar($3); }
 		;
 
 optParList	: /* empty */
@@ -59,7 +59,7 @@ parList        : IDENT 			{ enterTpar($1); }
 		;
 
 funcDecl	: FUNCTION IDENT   	{ }
-                  '('  optParList ')' 	{ enterTfunc( $2, yylen ); } 
+                  '('  optParList ')' 	{ enterTfunc( $2, 2 ); } 
 			block ';'
 		;
 
