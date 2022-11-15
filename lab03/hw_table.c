@@ -19,6 +19,7 @@ int cLevel=-1;
 int localAddr=0;
 int funcAddr=0;
 int parAddr=0;
+parCnt=0;
 
 void blockBegin(int firstAddr)	
 {
@@ -27,7 +28,7 @@ void blockBegin(int firstAddr)
     }
     localAddr=0;
     cLevel++;
-
+  
     return;
 }
 
@@ -44,7 +45,8 @@ int enterTfunc(char *id, int v)
     symbolTable[tIndex].level = cLevel;
     symbolTable[tIndex].addr = funcAddr++;
     symbolTable[tIndex].pars = v;
-    parAddr = -1*v;
+    parAddr=0;
+    parCnt=0;
     return tIndex++;
 }
 
@@ -53,7 +55,8 @@ int enterTpar(char *id)
     strcpy(symbolTable[tIndex].name, id);
     symbolTable[tIndex].type = parId;
     symbolTable[tIndex].level = cLevel;
-    symbolTable[tIndex].addr = ++localAddr;
+    symbolTable[tIndex].addr = --parAddr;
+    parCnt++;
     return tIndex++;
 }
 
@@ -77,22 +80,7 @@ int enterTconst(char *id, int v)
 int searchT(char *id, KindT k)		
 {
 	for(int i=0; i<tIndex; i++){
-		if(!(symbolTable[i].name == id)){
-      switch(k){
-        case varId:
-			    printf("undef\nCan't find symbol (%s, var) in the table\n", symbolTable[i].name);
-          break;
-        case parId:
-			    printf("undef\nCan't find symbol (%s, par) in the table\n", symbolTable[i].name);
-          break;
-        case constId:
-			    printf("undef\nCan't find symbol (%s, const) in the table\n", symbolTable[i].name);
-          break;
-        default:
-          continue;
-      }
-			return -1;
-		}
+  if(symbolTable[i].name == id){
     switch(k){
       case varId:
 		    printf("Index : %d\t\tkind : var\t\tId : %s\n", i, symbolTable[i].name);
@@ -105,8 +93,11 @@ int searchT(char *id, KindT k)
         break;
       default:
 			  printf("undef\nCan't find symbol (%s, %s) in the table\n", symbolTable[i].name, symbolTable[i].type);
+      }
+	  }else{
+	    printf("undef\nCan't find symbol (%s, %s) in the table\n", symbolTable[i].name, symbolTable[i].type);
     }
-	}
+  }
 	return 0;
 }
 
@@ -117,19 +108,19 @@ void printTable()
     KindT k = symbolTable[i].type;
     switch(k){
       case varId:
-		    printf("[%d]\tvar\t%s\t\t\t%d\t%d\t\t\n",i, symbolTable[i].name,
+		    printf("[%d]\tvar\t%s\t\t%d\t%d\t\t\n",i, symbolTable[i].name,
         symbolTable[i].level, symbolTable[i].addr);
         break;
       case funcId:
-		    printf("[%d]\tfunc\t%s\t\t\t%d\t%d\t%d\n",i, symbolTable[i].name,
+		    printf("[%d]\tfunc\t%s\t\t%d\t%d\t%d\n",i, symbolTable[i].name,
         symbolTable[i].level, symbolTable[i].addr, symbolTable[i].pars);
         break;
       case parId:
-		    printf("[%d]\tpar\t%s\t\t\t%d\t%d\t\t\n",i, symbolTable[i].name,
+		    printf("[%d]\tpar\t%s\t\t%d\t%d\t\t\n",i, symbolTable[i].name,
         symbolTable[i].level, symbolTable[i].addr);
         break;
       case constId:
-		    printf("[%d]\tconst\t%s\t\t\t\t\t\t\n",i, symbolTable[i].name,
+		    printf("[%d]\tconst\t%s\t\t\t\t\t\n",i, symbolTable[i].name,
         symbolTable[i].val);
     default:
         continue;

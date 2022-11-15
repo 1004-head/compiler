@@ -39,7 +39,7 @@ decl		: constDecl
 constDecl	: CONST numberList ';'
 		;
 		
-numberList	: IDENT EQ NUMBER		{ enterTconst($1, $3); }
+numberList	: IDENT EQ NUMBER		{ enterTconst($1, $3);}
 		| numberList COMMA IDENT EQ NUMBER
                   				{ enterTconst($3, $5); }
 		;
@@ -58,8 +58,8 @@ parList        : IDENT 			{ enterTpar($1); }
 		| parList COMMA IDENT	{ enterTpar($3); }
 		;
 
-funcDecl	: FUNCTION IDENT   	{ }
-                  '('  optParList ')' 	{ enterTfunc( $2, 2 ); } 
+funcDecl	: FUNCTION IDENT   	{ enterTfunc($2, parCnt); }
+                  '('  optParList ')' 	{  } 
 			block ';'
 		;
 
