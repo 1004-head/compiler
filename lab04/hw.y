@@ -24,7 +24,7 @@ program	:  			{ blockBegin(FIRSTADDR); }
 		;
 
 block		: 			{ $<val>$ = genCodeV(jmp, 0); }
-                declList		{ backPatch($<val>1); genCodeV(ict, frameL()); }
+                declList		{ backPatch($<val>1); genCodeV(ict, frameL());}
                 statement		{ genCodeR(); blockEnd(); }
 		;
 
@@ -66,11 +66,11 @@ funcDecl	: FUNCTION IDENT   	{ enterTfunc($2, nextCode()); blockBegin(FIRSTADDR)
 
 statement	: /* empty */
 		| IDENT COLOEQ expression
-                    			{ genCodeT(sto, searchT($1, varId)); }
+                    			{ genCodeT(sto, searchT($1, varId));}
 		| BEGINN statement stateList END
-		| IF condition THEN   {   }
+		| IF condition THEN   { genCodeV(jpc, );  }
                    statement       {  }
-		| WHILE		{  }
+		| WHILE		{ genCodeV(jpc, ) }
 		   condition DO	{  }
                     statement	{ 		      			 }
 		| RETURN expression	{ }
@@ -82,30 +82,30 @@ stateList	: /* empty */
 		| stateList ';' statement
 		;
 
-condition	: ODD expression 			{ }
-		| expression EQ expression 		{ }
-		| expression NOTEQ expression 	{ }
-		| expression LT expression 		{ }
-		| expression GT expression 		{ }
-		| expression LE expression 		{ }
-		| expression GE expression 		{ }
+condition	: ODD expression 			{ genCodeO(odd);}
+		| expression EQ expression 		{ genCodeO(eq);}
+		| expression NOTEQ expression 	{ genCodeO(neq);}
+		| expression LT expression 		{ genCodeO(ls);}
+		| expression GT expression 		{ genCodeO(gr);}
+		| expression LE expression 		{ genCodeO(lseq);}
+		| expression GE expression 		{ genCodeO(greq);}
 		;
 
-expression	: '-'  term 	{ }
+expression	: '-'  term 	{ genCodeO(neg); }
 		   termList 
 		| term  termList
 		;
 		
 termList	:  /* empty */
-		| termList '+' term 	{  }
-		| termList '-' term 	{  }
+		| termList '+' term 	{ genCodeO(add); }
+		| termList '-' term 	{ genCodeO(sub); }
 		;
 
 term		: factor factList
 		;
 factList	: /* empty */
-		| factList '*' factor 	{  }
-		| factList '/' factor 	{  }
+		| factList '*' factor 	{ genCodeO(mul); }
+		| factList '/' factor 	{ genCodeO(div); }
 		;
 
 factor		: IDENT	{ int j, k; j = searchT($1, varId); k = kindT(j);
@@ -113,7 +113,7 @@ factor		: IDENT	{ int j, k; j = searchT($1, varId); k = kindT(j);
 		     			case varId: case parId:
 		      				 break;
 		     			case constId:
-							genCodeV(lit, val(j));
+                  genCodeV(lit, val(j));
 		      				 break;
 		    			}
 		  		}

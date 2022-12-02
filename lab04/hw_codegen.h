@@ -1,24 +1,10 @@
-#define MAXCODE
-
 typedef enum codes{
-    lit, opr, lod, sto, ict, ret, jmp
+  lit, opr, lod, sto, ict, ret, jmp, cal, jpc
 }OpCode;
 
 typedef enum ops{
-    wrt, wrl
+  wrt, wrl, neg, add, sub, mul, div, odd, eq, ls, gr, neq, lseq, greq
 }Operator;
-
-typedef struct inst{
-    OpCode opCode;
-    union{
-        RelAddr addr;
-        int value;
-        Operator optr;
-    }u;
-}Inst;
-
-static Inst code[MAXCODE];
-static int cIndex = -1;
 
 int genCodeV(OpCode op, int v);		
 int genCodeT(OpCode op, int ti);
