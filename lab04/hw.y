@@ -68,12 +68,12 @@ statement	: /* empty */
 		| IDENT COLOEQ expression
                     			{ genCodeT(sto, searchT($1, varId));}
 		| BEGINN statement stateList END
-		| IF condition THEN   { genCodeV(jpc, );  }
+		| IF condition THEN   { genCodeV(jpc, $1);  }
                    statement       {  }
-		| WHILE		{ genCodeV(jpc, ) }
-		   condition DO	{  }
+		| WHILE		{ }
+		   condition DO	{ genCodeV(jpc, $1); }
                     statement	{ 		      			 }
-		| RETURN expression	{ }
+		| RETURN expression	{ genCodeR(); }
 		| WRITE expression	{ genCodeO(wrt); }
 		| WRITELN		{ genCodeO(wrl); }	
 		;
@@ -119,7 +119,7 @@ factor		: IDENT	{ int j, k; j = searchT($1, varId); k = kindT(j);
 		  		}
 		| NUMBER 	{ }
 
-		| IDENT '(' expList ')'	{ }
+		| IDENT '(' expList ')'	{ genCodeV(cal, $0); }
 		| '(' expression ')'
 		;
 		
